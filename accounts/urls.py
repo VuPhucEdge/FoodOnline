@@ -6,5 +6,10 @@ urlpatterns = [
         "registerUser/",
         views.registerUser,
         name="registerUser",
-    )
+    ),
+    path(
+        "registerVendor/",
+        views.registerVendor,
+        name="registerVendor",
+    ),
 ]
