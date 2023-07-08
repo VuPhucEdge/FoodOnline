@@ -1,13 +1,37 @@
 from django.shortcuts import render, redirect
 from .forms import UserForm
 from .models import User, UserProfile
-from django.contrib import messages
+from django.contrib import messages, auth
 from vendor.forms import VendorForm
+from .utils import detectUser
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.exceptions import PermissionDenied
+
+
+# Restrict the vendor from accessing the customer page
+def check_role_vendor(user):
+    if user.role == 1:
+        return True
+    else:
+        raise PermissionDenied
+
+
+# Restrict the customer from accessing the vendor page
+def check_role_customer(user):
+    if user.role == 2:
+        return True
+    else:
+        raise PermissionDenied
 
 
 # register user view
 def registerUser(request):
-    if request.method == "POST":
+    # if user already logged in
+    if request.user.is_authenticated:
+        messages.warning(request, "You are already logged in!")  # message
+        return redirect("myAccount")
+
+    elif request.method == "POST":
         # get request data
         form = UserForm(request.POST)
 
@@ -62,8 +86,14 @@ def registerUser(request):
     return render(request, "accounts/registerUser.html", context)
 
 
+# register vendor
 def registerVendor(request):
-    if request.method == "POST":
+    # if user already logged in
+    if request.user.is_authenticated:
+        messages.warning(request, "You are already logged in!")  # message
+        return redirect("myAccount")
+
+    elif request.method == "POST":
         # store the data and create the user
         form = UserForm(request.POST)
         v_form = VendorForm(request.POST, request.FILES)
@@ -102,7 +132,7 @@ def registerVendor(request):
             return redirect("registerVendor")
         else:
             print("Invalid form")
-            print(form.errors)
+            print(form.errors)  # form errors
     else:
         form = UserForm()
         v_form = VendorForm()
@@ -111,4 +141,60 @@ def registerVendor(request):
         "form": form,
         "v_form": v_form,
     }
+
     return render(request, "accounts/registerVendor.html", context)
+
+
+# login
+def login(request):
+    # if user already logged in
+    if request.user.is_authenticated:
+        messages.warning(request, "You are already logged in!")  # message
+        return redirect("myAccount")
+
+    # if user login
+    elif request.method == "POST":
+        email = request.POST["email"]
+        password = request.POST["password"]
+
+        # compare email and password on database
+        user = auth.authenticate(email=email, password=password)
+
+        if user is not None:
+            auth.login(request, user)  # login
+            messages.success(request, "You are now logged in.")  # message
+            return redirect("myAccount")
+        else:
+            messages.error(request, "Invalid login credentials")  # message
+            return redirect("login")
+
+    return render(request, "accounts/login.html")
+
+
+# logout
+def logout(request):
+    auth.logout(request)  # logout
+    messages.info(request, "You are logged out")  # message
+    return redirect("login")
+
+
+# define user role and redirect by detect function
+@login_required(login_url="login")  # define login and redirect url
+def myAccount(request):
+    user = request.user  # get user by request
+    redirectUrl = detectUser(user)  # call detectUser function, define user role
+    return redirect(redirectUrl)  # redirect
+
+
+# customer dashboard
+@login_required(login_url="login")  # define login and redirect url
+@user_passes_test(check_role_customer)  # check user role
+def custDashboard(request):
+    return render(request, "accounts/custDashboard.html")
+
+
+# vendor dashboard
+@login_required(login_url="login")  # define login and redirect url
+@user_passes_test(check_role_vendor)  # check user role
+def vendorDashboard(request):
+    return render(request, "accounts/vendorDashboard.html")
