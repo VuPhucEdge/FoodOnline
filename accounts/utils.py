@@ -91,3 +91,17 @@ def send_mail(request, user, mail_subject, mail_tempalte):
         to=[to_email],
     )
     mail.send()  # send mail
+
+
+# send notification
+def send_notification(mail_subject, mail_template, context):
+    from_email = settings.DEFAULT_FROM_EMAIL  # from email default
+    message = render_to_string(mail_template, context)  # message
+    to_email = context["user"].email  # user email address
+    mail = EmailMessage(
+        mail_subject,
+        message,
+        from_email,
+        to=[to_email],
+    )
+    mail.send()

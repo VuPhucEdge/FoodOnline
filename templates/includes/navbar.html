@@ -34,22 +34,22 @@
                                     My account /
                                 </a>
                                 <a class="cs-color cs-popup-joinus-btn login-popup ml-0" href="{% url 'logout' %}">
-                                    logout /
+                                    logout
                                 </a>
                             {% else %}
                                 <a class="cs-color cs-popup-joinus-btn login-popup" href="{% url 'login' %}">
                                     Login /
                                 </a>
-                            {% endif %}
-                            <span>
-                                <a class="cs-color cs-popup-joinus-btn login-popup ml-0" href="{% url 'registerUser' %}">
+                                <span>
+                                    <a class="cs-color cs-popup-joinus-btn login-popup ml-0" href="{% url 'registerUser' %}">
+                                        Register
+                                    </a>
+                                </span>
+                                <a class="get-start-btn" href="{% url 'registerVendor' %}">
                                     Register
+                                    Restaurant
                                 </a>
-                            </span>
-                            <a class="get-start-btn" href="{% url 'registerVendor' %}">
-                                Register
-                                Restaurant
-                            </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

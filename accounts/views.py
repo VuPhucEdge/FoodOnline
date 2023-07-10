@@ -16,6 +16,7 @@ from .utils import (
 )
 
 from vendor.forms import VendorForm
+from vendor.models import Vendor
 
 
 # Restrict the vendor from accessing the customer page

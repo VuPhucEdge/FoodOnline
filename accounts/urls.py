@@ -1,8 +1,10 @@
-from django.urls import path
+from django.urls import path, include
 
 from . import views
 
 urlpatterns = [
+    # default url
+    path("", views.myAccount, name="accounts"),
     # actions
     path(
         "registerUser/",
@@ -30,4 +32,6 @@ urlpatterns = [
         name="reset_password_validate",
     ),
     path("reset_password/", views.reset_password, name="reset_password"),
+    # vendor url
+    path("vendor/", include("vendor.urls")),
 ]
