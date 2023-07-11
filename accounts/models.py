@@ -121,8 +121,7 @@ class UserProfile(models.Model):
         blank=True,
         null=True,
     )
-    address_line_1 = models.CharField(max_length=50, blank=True, null=True)
-    address_line_2 = models.CharField(max_length=50, blank=True, null=True)
+    address = models.CharField(max_length=50, blank=True, null=True)
     country = models.CharField(max_length=50, blank=True, null=True)
     state = models.CharField(max_length=15, blank=True, null=True)
     city = models.CharField(max_length=15, blank=True, null=True)
